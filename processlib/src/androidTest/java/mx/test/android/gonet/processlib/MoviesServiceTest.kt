@@ -30,7 +30,7 @@ class MoviesServiceTest: BaseProcessTest() {
     @Throws(InterruptedException::class)
     fun moviesListTest() {
         moviesProcess.listOfMovies(
-            flow = FlowEnum.MoviesRecommendation,
+            flow = FlowEnum.MoviesUpcoming,
             idRecommended = "500",
             page = 1
         ).subscribeOn(Schedulers.io())
