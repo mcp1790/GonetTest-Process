@@ -10,6 +10,7 @@ import mx.test.android.gonet.domainlib.models.ListMoviesModel
 import mx.test.android.gonet.domainlib.models.ListTvShowsModel
 import mx.test.android.gonet.domainlib.models.MovieRawModel
 import mx.test.android.gonet.domainlib.models.TvShowRawModel
+import mx.test.android.gonet.domainlib.models.child.GenreModel
 import mx.test.android.gonet.processlib.implement.BaseProcess
 import mx.test.android.gonet.servicelib.converters.ListMoviesConverter
 import mx.test.android.gonet.servicelib.converters.ListTvShowConverter
@@ -35,4 +36,15 @@ class TvShowsProcess @Inject constructor(var context: Context) : BaseProcess(con
     ): Observable<ListTvShowsModel> {
         return tvShowsProcess.listOfTvShows(flow, idRecommended, page)
     }
+
+    fun listOfTvShowsGenres(
+    ): Observable<List<GenreModel>> {
+        return tvShowsProcess.listOfTvShowGenres()
+    }
+
+    fun tvShowLatest(
+    ): Observable<TvShowRawModel> {
+        return tvShowsProcess.tvShowLatest()
+    }
+
 }

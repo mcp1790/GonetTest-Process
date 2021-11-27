@@ -8,6 +8,8 @@ import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import mx.test.android.gonet.domainlib.models.ListMoviesModel
 import mx.test.android.gonet.domainlib.models.MovieRawModel
+import mx.test.android.gonet.domainlib.models.TvShowRawModel
+import mx.test.android.gonet.domainlib.models.child.GenreModel
 import mx.test.android.gonet.processlib.implement.BaseProcess
 import mx.test.android.gonet.servicelib.converters.ListMoviesConverter
 import mx.test.android.gonet.servicelib.converters.MovieRawConverter
@@ -30,5 +32,15 @@ class MoviesProcess @Inject constructor(var context: Context) : BaseProcess(cont
         page: Int,
     ): Observable<ListMoviesModel> {
         return moviesProcess.listOfMovies(flow, idRecommended, page)
+    }
+
+    fun listOfMoviesGenres(
+    ): Observable<List<GenreModel>> {
+        return moviesProcess.listOfMoviesGenres()
+    }
+
+    fun movieLatest(
+    ): Observable<MovieRawModel> {
+        return moviesProcess.movieLatest()
     }
 }

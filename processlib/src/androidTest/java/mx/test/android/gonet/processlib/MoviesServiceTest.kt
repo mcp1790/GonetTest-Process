@@ -45,4 +45,38 @@ class MoviesServiceTest: BaseProcessTest() {
                 synchronized(_syncObject) { _syncObject.notify() }
             })
     }
+
+    @Test(timeout = 3000000)
+    @Throws(InterruptedException::class)
+    fun tvShowLatestTest() {
+        moviesProcess.movieLatest(
+        ).subscribeOn(Schedulers.io())
+            .observeOn(Schedulers.io())
+            .subscribe({
+                TestCase.assertTrue(true)
+
+                synchronized(_syncObject) { _syncObject.notify() }
+            },{
+                Assert.fail("error.localizedMessage")
+
+                synchronized(_syncObject) { _syncObject.notify() }
+            })
+    }
+
+    @Test(timeout = 3000000)
+    @Throws(InterruptedException::class)
+    fun tvShowGenresTest() {
+        moviesProcess.listOfMoviesGenres(
+        ).subscribeOn(Schedulers.io())
+            .observeOn(Schedulers.io())
+            .subscribe({
+                TestCase.assertTrue(true)
+
+                synchronized(_syncObject) { _syncObject.notify() }
+            },{
+                Assert.fail("error.localizedMessage")
+
+                synchronized(_syncObject) { _syncObject.notify() }
+            })
+    }
 }
