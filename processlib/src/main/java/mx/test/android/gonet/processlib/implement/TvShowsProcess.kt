@@ -9,6 +9,7 @@ import io.reactivex.schedulers.Schedulers
 import mx.test.android.gonet.domainlib.models.ListMoviesModel
 import mx.test.android.gonet.domainlib.models.ListTvShowsModel
 import mx.test.android.gonet.domainlib.models.MovieRawModel
+import mx.test.android.gonet.domainlib.models.TvShowRawModel
 import mx.test.android.gonet.processlib.implement.BaseProcess
 import mx.test.android.gonet.servicelib.converters.ListMoviesConverter
 import mx.test.android.gonet.servicelib.converters.ListTvShowConverter
@@ -23,7 +24,7 @@ import javax.inject.Inject
 @SuppressLint("CheckResult")
 class TvShowsProcess @Inject constructor(var context: Context) : BaseProcess(context) {
 
-    fun tvShowDetails(tvShowId: String): Observable<MovieRawModel> {
+    fun tvShowDetails(tvShowId: String): Observable<TvShowRawModel> {
         return tvShowsProcess.tvShowDetails(tvShowId)
     }
 
