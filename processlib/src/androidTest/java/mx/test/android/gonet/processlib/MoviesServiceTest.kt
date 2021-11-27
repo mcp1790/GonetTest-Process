@@ -48,7 +48,7 @@ class MoviesServiceTest: BaseProcessTest() {
 
     @Test(timeout = 3000000)
     @Throws(InterruptedException::class)
-    fun tvShowLatestTest() {
+    fun moviewLatestTest() {
         moviesProcess.movieLatest(
         ).subscribeOn(Schedulers.io())
             .observeOn(Schedulers.io())

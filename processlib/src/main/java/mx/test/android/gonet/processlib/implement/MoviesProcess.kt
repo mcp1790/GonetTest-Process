@@ -31,7 +31,26 @@ class MoviesProcess @Inject constructor(var context: Context) : BaseProcess(cont
         idRecommended: String,
         page: Int,
     ): Observable<ListMoviesModel> {
-        return moviesProcess.listOfMovies(flow, idRecommended, page)
+        var listMoviesTemp: ListMoviesModel = ListMoviesModel()
+        return Observable.create { subscriber ->
+            moviesProcess.listOfMovies(flow, idRecommended, page)
+                .flatMap { listMoviesModel ->
+                    listMoviesTemp = listMoviesModel
+
+                    moviesProcess.listOfMoviesGenres()
+                }.subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .subscribe({ listGenreModels ->
+                    listMoviesTemp.results.forEach { movieModel ->
+                        movieModel.genres.forEach { genreModel ->
+                            genreModel.name = listGenreModels.first{ it.id == genreModel.id}.name
+                        }
+                    }
+                    subscriber.onNext(listMoviesTemp)
+                },{ error ->
+                    subscriber.onError(error)
+                })
+        }
     }
 
     fun listOfMoviesGenres(
