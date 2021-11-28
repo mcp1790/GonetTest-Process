@@ -6,10 +6,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
-import mx.test.android.gonet.domainlib.models.ListMoviesModel
-import mx.test.android.gonet.domainlib.models.ListTvShowsModel
-import mx.test.android.gonet.domainlib.models.MovieRawModel
-import mx.test.android.gonet.domainlib.models.TvShowRawModel
+import mx.test.android.gonet.domainlib.models.*
 import mx.test.android.gonet.domainlib.models.child.GenreModel
 import mx.test.android.gonet.processlib.implement.BaseProcess
 import mx.test.android.gonet.servicelib.converters.ListMoviesConverter
@@ -25,7 +22,7 @@ import javax.inject.Inject
 @SuppressLint("CheckResult")
 class TvShowsProcess @Inject constructor(var context: Context) : BaseProcess(context) {
 
-    fun tvShowDetails(tvShowId: String): Observable<TvShowRawModel> {
+    fun tvShowDetails(tvShowId: String): Observable<TvShowDetailModel> {
         return tvShowsProcess.tvShowDetails(tvShowId)
     }
 
