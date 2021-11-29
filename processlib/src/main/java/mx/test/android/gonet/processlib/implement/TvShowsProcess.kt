@@ -9,6 +9,7 @@ import io.reactivex.schedulers.Schedulers
 import mx.test.android.gonet.domainlib.models.*
 import mx.test.android.gonet.domainlib.models.child.GenreModel
 import mx.test.android.gonet.processlib.implement.BaseProcess
+import mx.test.android.gonet.processlib.utils.isNetworkAvailable
 import mx.test.android.gonet.servicelib.converters.ListMoviesConverter
 import mx.test.android.gonet.servicelib.converters.ListTvShowConverter
 import mx.test.android.gonet.servicelib.converters.MovieRawConverter
@@ -23,7 +24,23 @@ import javax.inject.Inject
 class TvShowsProcess @Inject constructor(var context: Context) : BaseProcess(context) {
 
     fun tvShowDetails(tvShowId: String): Observable<TvShowDetailModel> {
-        return tvShowsProcess.tvShowDetails(tvShowId)
+        return if (isNetworkAvailable(context)) {
+            var tvShowModel = TvShowDetailModel()
+            Observable.unsafeCreate { subscriber ->
+                tvShowsProcess.tvShowDetails(tvShowId)
+                    .flatMap {
+                        tvShowModel = it
+                        tvShowDetailsStorage.saveRx(it)
+                    }.subscribeOn(Schedulers.io())
+                    .observeOn(Schedulers.io())
+                    .subscribe({
+                        subscriber.onNext(tvShowModel)
+                    }, {
+                        subscriber.onError(it)
+                    })
+            }
+        } else
+            tvShowDetailsStorage.getRx(tvShowId.toInt())
     }
 
     fun listOfTvShows(
@@ -31,26 +48,31 @@ class TvShowsProcess @Inject constructor(var context: Context) : BaseProcess(con
         idRecommended: String,
         page: Int,
     ): Observable<ListTvShowsModel> {
-        var listMoviesTemp: ListTvShowsModel = ListTvShowsModel()
-        return Observable.create { subscriber ->
-            tvShowsProcess.listOfTvShows(flow, idRecommended, page)
-                .flatMap { listMoviesModel ->
-                    listMoviesTemp = listMoviesModel
+        return if (isNetworkAvailable(context)){
+            var listMoviesTemp = ListTvShowsModel()
+            return Observable.create { subscriber ->
+                tvShowsProcess.listOfTvShows(flow, idRecommended, page)
+                    .flatMap { listMoviesModel ->
+                        listMoviesTemp = listMoviesModel
 
-                    tvShowsProcess.listOfTvShowGenres()
-                }.subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .subscribe({ listGenreModels ->
-                    listMoviesTemp.results.forEach { movieModel ->
-                        movieModel.genres.forEach { genreModel ->
-                            genreModel.name = listGenreModels.first{ it.id == genreModel.id}.name
+                        tvShowsProcess.listOfTvShowGenres()
+                    }.flatMap { listGenreModels ->
+                        listMoviesTemp.results.forEach { movieModel ->
+                            movieModel.genres.forEach { genreModel ->
+                                genreModel.name = listGenreModels.first{ it.id == genreModel.id}.name
+                            }
                         }
-                    }
-                    subscriber.onNext(listMoviesTemp)
-                },{ error ->
-                    subscriber.onError(error)
-                })
-        }
+                        tvShowListStorage.saveRx(listMoviesTemp)
+                    }.subscribeOn(Schedulers.io())
+                    .observeOn(Schedulers.io())
+                    .subscribe({
+                        subscriber.onNext(listMoviesTemp)
+                    },{ error ->
+                        subscriber.onError(error)
+                    })
+            }
+        } else
+            tvShowListStorage.getRx(page)
     }
 
     fun listOfTvShowsGenres(
